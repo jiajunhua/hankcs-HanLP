@@ -36,7 +36,7 @@ public class LexiconUtility
     {
         CoreDictionary.Attribute attribute = CoreDictionary.get(word);
         if (attribute != null) return attribute;
-        return CustomDictionary.get(word);
+        return CustomDictionary.DEFAULT.get(word);
     }
 
     /**
@@ -83,12 +83,12 @@ public class LexiconUtility
         if (attribute == null) return false;
 
         if (CoreDictionary.trie.set(word, attribute)) return true;
-        if (CustomDictionary.dat.set(word, attribute)) return true;
-        if (CustomDictionary.trie == null)
+        if (CustomDictionary.DEFAULT.dat.set(word, attribute)) return true;
+        if (CustomDictionary.DEFAULT.trie == null)
         {
-            CustomDictionary.add(word);
+            CustomDictionary.DEFAULT.add(word);
         }
-        CustomDictionary.trie.put(word, attribute);
+        CustomDictionary.DEFAULT.trie.put(word, attribute);
         return true;
     }
 

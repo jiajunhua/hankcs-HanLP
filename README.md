@@ -254,20 +254,25 @@ public class DemoCustomDictionary
 {
     public static void main(String[] args)
     {
+        // 系统默认的词典
+        CustomDictionary dictionary = CustomDictionary.DEFAULT;
+        // 每个分词器都有一份词典，默认公用 CustomDictionary.DEFAULT，你可以为任何分词器指定一份不同的词典
+        CustomDictionary myDictionary = new CustomDictionary("data/dictionary/custom/CustomDictionary.txt", "data/dictionary/custom/机构名词典.txt");
+        StandardTokenizer.SEGMENT.enableCustomDictionary(myDictionary);
         // 动态增加
-        CustomDictionary.add("攻城狮");
+        dictionary.add("攻城狮");
         // 强行插入
-        CustomDictionary.insert("白富美", "nz 1024");
+        dictionary.insert("白富美", "nz 1024");
         // 删除词语（注释掉试试）
-//        CustomDictionary.remove("攻城狮");
-        System.out.println(CustomDictionary.add("单身狗", "nz 1024 n 1"));
-        System.out.println(CustomDictionary.get("单身狗"));
+//        dictionary.remove("攻城狮");
+        System.out.println(dictionary.add("单身狗", "nz 1024 n 1"));
+        System.out.println(dictionary.get("单身狗"));
 
         String text = "攻城狮逆袭单身狗，迎娶白富美，走上人生巅峰";  // 怎么可能噗哈哈！
 
         // AhoCorasickDoubleArrayTrie自动机扫描文本中出现的自定义词语
         final char[] charArray = text.toCharArray();
-        CustomDictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
+        dictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
         {
             @Override
             public void hit(int begin, int end, CoreDictionary.Attribute value)
@@ -282,7 +287,7 @@ public class DemoCustomDictionary
 }
 ```
 - 说明
-  * `CustomDictionary`是一份全局的用户自定义词典，可以随时增删，影响全部分词器。另外可以在任何分词器中关闭它。通过代码动态增删不会保存到词典文件。
+  * `CustomDictionary.DEFAULT`是一份全局的用户自定义词典，可以随时增删，影响全部分词器。另外可以在任何分词器中关闭它。通过代码动态增删不会保存到词典文件。
   * 中文分词≠词典，词典无法解决中文分词，`Segment`提供高低优先级应对不同场景，请参考[FAQ](https://github.com/hankcs/HanLP/wiki/FAQ#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BF%AE%E6%94%B9%E4%BA%86%E8%AF%8D%E5%85%B8%E8%BF%98%E6%98%AF%E6%B2%A1%E6%9C%89%E6%95%88%E6%9E%9C)。
 - 追加词典
   * `CustomDictionary`主词典文本路径是`data/dictionary/custom/CustomDictionary.txt`，用户可以在此增加自己的词语（不推荐）；也可以单独新建一个文本文件，通过配置文件`CustomDictionaryPath=data/dictionary/custom/CustomDictionary.txt; 我的词典.txt;`来追加词典（推荐）。

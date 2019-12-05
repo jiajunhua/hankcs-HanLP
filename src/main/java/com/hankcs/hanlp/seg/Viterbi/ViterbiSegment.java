@@ -40,11 +40,9 @@ import static com.hankcs.hanlp.utility.Predefine.logger;
  */
 public class ViterbiSegment extends WordBasedSegment
 {
-    private DoubleArrayTrie<CoreDictionary.Attribute> dat;
 
     public ViterbiSegment()
     {
-        this.dat = CustomDictionary.dat;
     }
 
     /**
@@ -66,12 +64,12 @@ public class ViterbiSegment extends WordBasedSegment
 
     public DoubleArrayTrie<CoreDictionary.Attribute> getDat()
     {
-        return dat;
+        return customDictionary.dat;
     }
 
     public void setDat(DoubleArrayTrie<CoreDictionary.Attribute> dat)
     {
-        this.dat = dat;
+        this.customDictionary.dat = dat;
     }
 
     @Override
@@ -94,8 +92,8 @@ public class ViterbiSegment extends WordBasedSegment
         if (config.useCustomDictionary)
         {
             if (config.indexMode > 0)
-                combineByCustomDictionary(vertexList, this.dat, wordNetAll);
-            else combineByCustomDictionary(vertexList, this.dat);
+                combineByCustomDictionary(vertexList, customDictionary, wordNetAll);
+            else combineByCustomDictionary(vertexList, customDictionary);
         }
 
         if (HanLP.Config.DEBUG)

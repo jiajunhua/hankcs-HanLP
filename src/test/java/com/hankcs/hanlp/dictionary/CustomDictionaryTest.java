@@ -25,7 +25,7 @@ public class CustomDictionaryTest extends TestCase
 
     public void testGet() throws Exception
     {
-        assertEquals("nz 1 ", CustomDictionary.get("一个心眼儿").toString());
+        assertEquals("nz 1 ", CustomDictionary.DEFAULT.get("一个心眼儿").toString());
     }
 
     /**
@@ -164,15 +164,15 @@ public class CustomDictionaryTest extends TestCase
 
     public void testIssue540() throws Exception
     {
-        CustomDictionary.add("123");
-        CustomDictionary.add("摩根");
-        CustomDictionary.remove("123");
-        CustomDictionary.remove("摩根");
+        CustomDictionary.DEFAULT.add("123");
+        CustomDictionary.DEFAULT.add("摩根");
+        CustomDictionary.DEFAULT.remove("123");
+        CustomDictionary.DEFAULT.remove("摩根");
     }
 
     public void testReload()
     {
-        CustomDictionary.reload();
+        CustomDictionary.DEFAULT.reload();
         System.out.println(HanLP.segment("自然语言处理"));
     }
 }

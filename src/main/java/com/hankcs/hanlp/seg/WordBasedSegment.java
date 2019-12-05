@@ -33,6 +33,7 @@ import java.util.*;
  */
 public abstract class WordBasedSegment extends Segment
 {
+    public CustomDictionary customDictionary = CustomDictionary.DEFAULT;
 
     public WordBasedSegment()
     {
@@ -396,7 +397,7 @@ public abstract class WordBasedSegment extends Segment
         // 强制用户词典查询
         if (config.forceCustomDictionary)
         {
-            CustomDictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
+            customDictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
             {
                 @Override
                 public void hit(int begin, int end, CoreDictionary.Attribute value)

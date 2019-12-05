@@ -10,7 +10,6 @@
  */
 package com.hankcs.book.ch03;
 
-import com.hankcs.hanlp.dictionary.CustomDictionary;
 import com.hankcs.hanlp.seg.Segment;
 import com.hankcs.hanlp.seg.Viterbi.ViterbiSegment;
 
@@ -31,7 +30,7 @@ public class DemoCustomDictionary
         final String sentence = "社会摇摆简称社会摇";
         segment.enableCustomDictionary(false);
         System.out.println("不挂载词典：" + segment.seg(sentence));
-        CustomDictionary.insert("社会摇", "nz 100");
+        segment.customDictionary.insert("社会摇", "nz 100");
         segment.enableCustomDictionary(true);
         System.out.println("低优先级词典：" + segment.seg(sentence));
         segment.enableCustomDictionaryForcing(true);

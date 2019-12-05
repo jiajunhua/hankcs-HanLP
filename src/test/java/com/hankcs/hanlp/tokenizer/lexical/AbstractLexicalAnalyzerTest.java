@@ -33,7 +33,7 @@ public class AbstractLexicalAnalyzerTest extends TestCase
         LexicalAnalyzer analyzer = new PerceptronLexicalAnalyzer();
         String text = "攻城狮逆袭单身狗，迎娶白富美，走上人生巅峰";
         System.out.println(analyzer.segment(text));
-        CustomDictionary.add("攻城狮");
+        CustomDictionary.DEFAULT.add("攻城狮");
         System.out.println(analyzer.segment(text));
     }
 
@@ -42,7 +42,7 @@ public class AbstractLexicalAnalyzerTest extends TestCase
         CRFLexicalAnalyzer analyzer = new CRFLexicalAnalyzer();
         String text = "强行修改词性";
         System.out.println(analyzer.seg(text));
-        CustomDictionary.add("修改", "自定义词性");
+        CustomDictionary.DEFAULT.add("修改", "自定义词性");
         System.out.println(analyzer.seg(text));
     }
 }

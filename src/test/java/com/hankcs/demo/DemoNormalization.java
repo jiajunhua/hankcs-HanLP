@@ -25,7 +25,7 @@ public class DemoNormalization
     public static void main(String[] args)
     {
         HanLP.Config.Normalization = true;
-        CustomDictionary.insert("爱听4G", "nz 1000");
+        CustomDictionary.DEFAULT.insert("爱听4G", "nz 1000");
         System.out.println(HanLP.segment("爱听4g"));
         System.out.println(HanLP.segment("爱听4G"));
         System.out.println(HanLP.segment("爱听４G"));

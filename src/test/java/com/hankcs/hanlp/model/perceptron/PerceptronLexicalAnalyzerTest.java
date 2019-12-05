@@ -46,7 +46,7 @@ public class PerceptronLexicalAnalyzerTest extends TestCase
     public void testCustomDictionary() throws Exception
     {
         analyzer.enableCustomDictionary(true);
-        assertTrue(CustomDictionary.contains("一字长蛇阵"));
+        assertTrue(CustomDictionary.DEFAULT.contains("一字长蛇阵"));
         final String text = "张飞摆出一字长蛇阵如入无人之境，孙权惊呆了";
 //        System.out.println(analyzer.analyze(text));
         assertTrue(analyzer.analyze(text).toString().contains(" 一字长蛇阵/"));
@@ -54,7 +54,7 @@ public class PerceptronLexicalAnalyzerTest extends TestCase
 
     public void testCustomNature() throws Exception
     {
-        assertTrue(CustomDictionary.insert("饿了么", "ntc 1"));
+        assertTrue(CustomDictionary.DEFAULT.insert("饿了么", "ntc 1"));
         analyzer.enableCustomDictionaryForcing(true);
         assertEquals("美团/n 与/p 饿了么/ntc 争夺/v 外卖/v 市场/n", analyzer.analyze("美团与饿了么争夺外卖市场").toString());
     }
@@ -113,7 +113,7 @@ public class PerceptronLexicalAnalyzerTest extends TestCase
     public void testCustomDictionaryForcing() throws Exception
     {
         String text = "银川普通人与川普通电话讲四川普通话";
-        CustomDictionary.insert("川普", "NRF 1");
+        CustomDictionary.DEFAULT.insert("川普", "NRF 1");
 
         analyzer.enableCustomDictionaryForcing(false);
         System.out.println(analyzer.analyze(text));

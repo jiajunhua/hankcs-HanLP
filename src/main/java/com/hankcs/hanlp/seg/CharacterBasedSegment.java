@@ -28,7 +28,6 @@ import com.hankcs.hanlp.seg.common.Vertex;
  */
 public abstract class CharacterBasedSegment extends Segment
 {
-
     /**
      * 查询或猜测一个词语的属性，
      * 先查词典，然后对字母、数字串的属性进行判断，最后猜测未登录词
@@ -40,7 +39,7 @@ public abstract class CharacterBasedSegment extends Segment
         CoreDictionary.Attribute attribute = CoreDictionary.get(term.word);
         if (attribute == null)
         {
-            attribute = CustomDictionary.get(term.word);
+            attribute = CustomDictionary.DEFAULT.get(term.word);
         }
         if (attribute == null)
         {

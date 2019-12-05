@@ -65,7 +65,7 @@ public class SegmentTest extends TestCase
     public void testViterbi() throws Exception
     {
 //        HanLP.Config.enableDebug(true);
-        CustomDictionary.add("网剧");
+        CustomDictionary.DEFAULT.add("网剧");
         Segment seg = new DijkstraSegment();
         List<Term> termList = seg.seg("优酷总裁魏明介绍了优酷2015年的内容战略，表示要以“大电影、大网剧、大综艺”为关键词");
 //        System.out.println(termList);
@@ -152,7 +152,7 @@ public class SegmentTest extends TestCase
 
     public void testCustomDictionary() throws Exception
     {
-        CustomDictionary.insert("肯德基", "ns 1000");
+        CustomDictionary.DEFAULT.insert("肯德基", "ns 1000");
         Segment segment = new ViterbiSegment();
 //        System.out.println(segment.seg("肯德基"));
     }
@@ -176,7 +176,7 @@ public class SegmentTest extends TestCase
 //        HanLP.Config.enableDebug();
         String text = "BENQphone";
 //        System.out.println(HanLP.segment(text));
-        CustomDictionary.insert("BENQ");
+        CustomDictionary.DEFAULT.insert("BENQ");
 //        System.out.println(HanLP.segment(text));
     }
 
@@ -323,7 +323,7 @@ public class SegmentTest extends TestCase
 
     public void testIssue16() throws Exception
     {
-        CustomDictionary.insert("爱听4g", "nz 1000");
+        CustomDictionary.DEFAULT.insert("爱听4g", "nz 1000");
         Segment segment = new ViterbiSegment();
 //        System.out.println(segment.seg("爱听4g"));
 //        System.out.println(segment.seg("爱听4G"));
@@ -425,8 +425,8 @@ public class SegmentTest extends TestCase
 
     public void testIssue343() throws Exception
     {
-        CustomDictionary.insert("酷我");
-        CustomDictionary.insert("酷我音乐");
+        CustomDictionary.DEFAULT.insert("酷我");
+        CustomDictionary.DEFAULT.insert("酷我音乐");
         Segment segment = HanLP.newSegment().enableIndexMode(true);
 //        System.out.println(segment.seg("1酷我音乐2酷我音乐3酷我4酷我音乐6酷7酷我音乐"));
     }
@@ -495,7 +495,7 @@ public class SegmentTest extends TestCase
 
     public void testIssue633() throws Exception
     {
-        CustomDictionary.add("钱管家");
+        CustomDictionary.DEFAULT.add("钱管家");
         StandardTokenizer.SEGMENT.enableCustomDictionaryForcing(true);
 //        System.out.println(HanLP.segment("钱管家中怎么绑定网银"));
     }
@@ -503,7 +503,7 @@ public class SegmentTest extends TestCase
     public void testIssue784() throws Exception
     {
         String s = "苏苏中级会计什么时候更新";
-        CustomDictionary.add("苏苏");
+        CustomDictionary.DEFAULT.add("苏苏");
         StandardTokenizer.SEGMENT.enableCustomDictionaryForcing(true);
         assertTrue(HanLP.segment(s).toString().contains("苏苏"));
     }
@@ -533,7 +533,7 @@ public class SegmentTest extends TestCase
 
     public void testIssue1172()
     {
-        CustomDictionary.insert("我的额度", "xyz");
+        CustomDictionary.DEFAULT.insert("我的额度", "xyz");
         System.out.println(HanLP.segment("我的额度不够，需要提高额度"));
     }
 }

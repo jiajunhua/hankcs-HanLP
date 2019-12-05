@@ -53,7 +53,7 @@ public class DemoCustomNature
                 System.out.printf("找到了 [%s] : %s\n", pcNature, term.word);
         }
         // 还可以直接插入到用户词典
-        CustomDictionary.insert("阿尔法狗", "科技名词 1024");
+        CustomDictionary.DEFAULT.insert("阿尔法狗", "科技名词 1024");
         StandardTokenizer.SEGMENT.enablePartOfSpeechTagging(true);  // 依然支持隐马词性标注
         termList = HanLP.segment("苹果电脑可以运行开源阿尔法狗代码吗");
         System.out.println(termList);

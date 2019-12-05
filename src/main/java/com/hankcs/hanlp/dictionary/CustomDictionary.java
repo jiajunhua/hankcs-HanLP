@@ -40,21 +40,70 @@ public class CustomDictionary
     /**
      * 用于储存用户动态插入词条的二分trie树
      */
-    public static BinTrie<CoreDictionary.Attribute> trie;
-    public static DoubleArrayTrie<CoreDictionary.Attribute> dat = new DoubleArrayTrie<CoreDictionary.Attribute>();
+    public BinTrie<CoreDictionary.Attribute> trie;
+    /**
+     * 用于储存文件中的词条
+     */
+    public DoubleArrayTrie<CoreDictionary.Attribute> dat;
+    /**
+     * 本词典是从哪些路径加载得到的
+     */
+    public String path[];
+    /**
+     * 默认实例
+     */
+    public static CustomDictionary DEFAULT = new CustomDictionary(HanLP.Config.CustomDictionaryPath);
 
-    // 自动加载词典
-    static
+    /**
+     * 构造一份词典对象，并加载{@code com.hankcs.hanlp.HanLP.Config#CustomDictionaryPath}
+     */
+    public CustomDictionary()
     {
-        String path[] = HanLP.Config.CustomDictionaryPath;
+        this(HanLP.Config.CustomDictionaryPath);
+    }
+
+    /**
+     * 构造一份词典对象，并加载指定路径的词典
+     * @param path 词典路径
+     */
+    public CustomDictionary(String... path)
+    {
+        this(new DoubleArrayTrie<CoreDictionary.Attribute>(), new BinTrie<CoreDictionary.Attribute>(), path);
+    }
+
+    /**
+     * 使用高级数据结构构造词典对象，并加载指定路径的词典
+     * @param dat 双数组trie树
+     * @param trie trie树
+     * @param path 词典路径
+     */
+    public CustomDictionary(DoubleArrayTrie<CoreDictionary.Attribute> dat, BinTrie<CoreDictionary.Attribute> trie, String[] path)
+    {
+        this.dat = dat;
+        this.trie = trie;
+        if (path != null)
+        {
+            load(path);
+        }
+    }
+
+    /**
+     * 加载指定路径的词典
+     * @param path 词典路径
+     * @return 是否加载成功
+     */
+    public boolean load(String... path)
+    {
         long start = System.currentTimeMillis();
         if (!loadMainDictionary(path[0]))
         {
             logger.warning("自定义词典" + Arrays.toString(path) + "加载失败");
+            return false;
         }
         else
         {
             logger.info("自定义词典加载成功:" + dat.size() + "个词条，耗时" + (System.currentTimeMillis() - start) + "ms");
+            return true;
         }
     }
 
@@ -152,9 +201,14 @@ public class CustomDictionary
         return true;
     }
 
-    private static boolean loadMainDictionary(String mainPath)
+    /**
+     * 使用词典路径为缓存路径，加载指定词典
+     * @param mainPath 词典路径（+.bin等于缓存路径）
+     * @return
+     */
+    public boolean loadMainDictionary(String mainPath)
     {
-        return loadMainDictionary(mainPath, HanLP.Config.CustomDictionaryPath, CustomDictionary.dat, true);
+        return loadMainDictionary(mainPath, HanLP.Config.CustomDictionaryPath, this.dat, true);
     }
 
 
@@ -227,7 +281,7 @@ public class CustomDictionary
      * @param rewriteTable
      * @return 是否更新了
      */
-    private static boolean updateAttributeIfExist(String key, CoreDictionary.Attribute attribute, TreeMap<String, CoreDictionary.Attribute> map, TreeMap<Integer, CoreDictionary.Attribute> rewriteTable)
+    private boolean updateAttributeIfExist(String key, CoreDictionary.Attribute attribute, TreeMap<String, CoreDictionary.Attribute> map, TreeMap<Integer, CoreDictionary.Attribute> rewriteTable)
     {
         int wordID = CoreDictionary.getWordID(key);
         CoreDictionary.Attribute attributeExisted;
@@ -262,7 +316,7 @@ public class CustomDictionary
      * @param natureWithFrequency 词性和其对应的频次，比如“nz 1 v 2”，null时表示“nz 1”
      * @return 是否插入成功（失败的原因可能是不覆盖、natureWithFrequency有问题等，后者可以通过调试模式了解原因）
      */
-    public static boolean add(String word, String natureWithFrequency)
+    public boolean add(String word, String natureWithFrequency)
     {
         if (contains(word)) return false;
         return insert(word, natureWithFrequency);
@@ -275,7 +329,7 @@ public class CustomDictionary
      * @param word                新词 如“裸婚”
      * @return 是否插入成功（失败的原因可能是不覆盖等，可以通过调试模式了解原因）
      */
-    public static boolean add(String word)
+    public boolean add(String word)
     {
         if (HanLP.Config.Normalization) word = CharTable.convert(word);
         if (contains(word)) return false;
@@ -290,7 +344,7 @@ public class CustomDictionary
      * @param natureWithFrequency 词性和其对应的频次，比如“nz 1 v 2”，null时表示“nz 1”。
      * @return 是否插入成功（失败的原因可能是natureWithFrequency问题，可以通过调试模式了解原因）
      */
-    public static boolean insert(String word, String natureWithFrequency)
+    public boolean insert(String word, String natureWithFrequency)
     {
         if (word == null) return false;
         if (HanLP.Config.Normalization) word = CharTable.convert(word);
@@ -309,7 +363,7 @@ public class CustomDictionary
      * @param word
      * @return
      */
-    public static boolean insert(String word)
+    public boolean insert(String word)
     {
         return insert(word, null);
     }
@@ -415,7 +469,7 @@ public class CustomDictionary
      * @param key
      * @return
      */
-    public static CoreDictionary.Attribute get(String key)
+    public CoreDictionary.Attribute get(String key)
     {
         if (HanLP.Config.Normalization) key = CharTable.convert(key);
         CoreDictionary.Attribute attribute = dat.get(key);
@@ -430,7 +484,7 @@ public class CustomDictionary
      *
      * @param key
      */
-    public static void remove(String key)
+    public void remove(String key)
     {
         if (HanLP.Config.Normalization) key = CharTable.convert(key);
         if (trie == null) return;
@@ -443,7 +497,7 @@ public class CustomDictionary
      * @param key
      * @return
      */
-    public static LinkedList<Map.Entry<String, CoreDictionary.Attribute>> commonPrefixSearch(String key)
+    public LinkedList<Map.Entry<String, CoreDictionary.Attribute>> commonPrefixSearch(String key)
     {
         return trie.commonPrefixSearchWithValue(key);
     }
@@ -455,12 +509,12 @@ public class CustomDictionary
      * @param begin
      * @return
      */
-    public static LinkedList<Map.Entry<String, CoreDictionary.Attribute>> commonPrefixSearch(char[] chars, int begin)
+    public LinkedList<Map.Entry<String, CoreDictionary.Attribute>> commonPrefixSearch(char[] chars, int begin)
     {
         return trie.commonPrefixSearchWithValue(chars, begin);
     }
 
-    public static BaseSearcher getSearcher(String text)
+    public BaseSearcher getSearcher(String text)
     {
         return new Searcher(text);
     }
@@ -478,7 +532,7 @@ public class CustomDictionary
      * @param key 词语
      * @return 是否包含
      */
-    public static boolean contains(String key)
+    public boolean contains(String key)
     {
         if (dat.exactMatchSearch(key) >= 0) return true;
         return trie != null && trie.containsKey(key);
@@ -489,12 +543,12 @@ public class CustomDictionary
      * @param charArray 文本
      * @return 查询者
      */
-    public static BaseSearcher getSearcher(char[] charArray)
+    public BaseSearcher getSearcher(char[] charArray)
     {
         return new Searcher(charArray);
     }
 
-    static class Searcher extends BaseSearcher<CoreDictionary.Attribute>
+    class Searcher extends BaseSearcher<CoreDictionary.Attribute>
     {
         /**
          * 分词从何处开始，这是一个状态
@@ -547,7 +601,7 @@ public class CustomDictionary
      * @return
      * @deprecated 谨慎操作，有可能废弃此接口
      */
-    public static BinTrie<CoreDictionary.Attribute> getTrie()
+    public BinTrie<CoreDictionary.Attribute> getTrie()
     {
         return trie;
     }
@@ -557,7 +611,7 @@ public class CustomDictionary
      * @param text         文本
      * @param processor    处理器
      */
-    public static void parseText(char[] text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
+    public void parseText(char[] text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
     {
         if (trie != null)
         {
@@ -575,11 +629,11 @@ public class CustomDictionary
      * @param text         文本
      * @param processor    处理器
      */
-    public static void parseText(String text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
+    public void parseText(String text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
     {
         if (trie != null)
         {
-            BaseSearcher searcher = CustomDictionary.getSearcher(text);
+            BaseSearcher searcher = this.getSearcher(text);
             int offset;
             Map.Entry<String, CoreDictionary.Attribute> entry;
             while ((entry = searcher.next()) != null)
@@ -601,7 +655,7 @@ public class CustomDictionary
      * @param text      文本
      * @param processor 处理器
      */
-    public static void parseLongestText(String text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
+    public void parseLongestText(String text, AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute> processor)
     {
         if (trie != null)
         {
@@ -649,9 +703,8 @@ public class CustomDictionary
      * 集群环境（或其他IOAdapter）需要自行删除缓存文件（路径 = HanLP.Config.CustomDictionaryPath[0] + Predefine.BIN_EXT）
      * @return 是否加载成功
      */
-    public static boolean reload()
+    public boolean reload()
     {
-        String path[] = HanLP.Config.CustomDictionaryPath;
         if (path == null || path.length == 0) return false;
         IOUtil.deleteFile(path[0] + Predefine.BIN_EXT); // 删掉缓存
         return loadMainDictionary(path[0]);

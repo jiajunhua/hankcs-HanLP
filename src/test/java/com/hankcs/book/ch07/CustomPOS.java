@@ -28,10 +28,10 @@ public class CustomPOS
 {
     public static void main(String[] args) throws IOException
     {
-        CustomDictionary.insert("苹果", "手机品牌 1");
-        CustomDictionary.insert("iPhone X", "手机型号 1");
         PerceptronLexicalAnalyzer analyzer = new PerceptronLexicalAnalyzer();
         analyzer.enableCustomDictionaryForcing(true);
+        analyzer.customDictionary.insert("苹果", "手机品牌 1");
+        analyzer.customDictionary.insert("iPhone X", "手机型号 1");
         System.out.println(analyzer.analyze("你们苹果iPhone X保修吗？"));
         System.out.println(analyzer.analyze("多吃苹果有益健康"));
     }

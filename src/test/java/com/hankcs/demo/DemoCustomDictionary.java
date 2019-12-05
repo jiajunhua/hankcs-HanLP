@@ -16,6 +16,8 @@ import com.hankcs.hanlp.collection.AhoCorasick.AhoCorasickDoubleArrayTrie;
 import com.hankcs.hanlp.dictionary.BaseSearcher;
 import com.hankcs.hanlp.dictionary.CoreDictionary;
 import com.hankcs.hanlp.dictionary.CustomDictionary;
+import com.hankcs.hanlp.seg.Viterbi.ViterbiSegment;
+import com.hankcs.hanlp.tokenizer.StandardTokenizer;
 
 import java.util.Map;
 
@@ -28,20 +30,25 @@ public class DemoCustomDictionary
 {
     public static void main(String[] args)
     {
+        // 系统默认的词典
+        CustomDictionary dictionary = CustomDictionary.DEFAULT;
+        // 每个分词器都有一份词典，默认公用 CustomDictionary.DEFAULT，你可以为任何分词器指定一份不同的词典
+        CustomDictionary myDictionary = new CustomDictionary("data/dictionary/custom/CustomDictionary.txt", "data/dictionary/custom/机构名词典.txt");
+        StandardTokenizer.SEGMENT.enableCustomDictionary(myDictionary);
         // 动态增加
-        CustomDictionary.add("攻城狮");
+        dictionary.add("攻城狮");
         // 强行插入
-        CustomDictionary.insert("白富美", "nz 1024");
+        dictionary.insert("白富美", "nz 1024");
         // 删除词语（注释掉试试）
-//        CustomDictionary.remove("攻城狮");
-        System.out.println(CustomDictionary.add("单身狗", "nz 1024 n 1"));
-        System.out.println(CustomDictionary.get("单身狗"));
+//        dictionary.remove("攻城狮");
+        System.out.println(dictionary.add("单身狗", "nz 1024 n 1"));
+        System.out.println(dictionary.get("单身狗"));
 
         String text = "攻城狮逆袭单身狗，迎娶白富美，走上人生巅峰";  // 怎么可能噗哈哈！
 
         // DoubleArrayTrie分词
         final char[] charArray = text.toCharArray();
-        CustomDictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
+        dictionary.parseText(charArray, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
         {
             @Override
             public void hit(int begin, int end, CoreDictionary.Attribute value)
@@ -50,7 +57,7 @@ public class DemoCustomDictionary
             }
         });
         // 首字哈希之后二分的trie树分词
-        BaseSearcher searcher = CustomDictionary.getSearcher(text);
+        BaseSearcher searcher = dictionary.getSearcher(text);
         Map.Entry entry;
         while ((entry = searcher.next()) != null)
         {

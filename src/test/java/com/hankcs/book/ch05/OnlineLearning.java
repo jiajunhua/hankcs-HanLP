@@ -37,7 +37,7 @@ public class OnlineLearning
         String text = "与川普通电话";
         System.out.println(segment.seg(text));
 
-        CustomDictionary.insert("川普", "nrf 1");
+        segment.customDictionary.insert("川普", "nrf 1");
         segment.enableCustomDictionaryForcing(true);
         System.out.println(segment.seg(text));
 

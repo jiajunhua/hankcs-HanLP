@@ -15,6 +15,7 @@ import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.collection.AhoCorasick.AhoCorasickDoubleArrayTrie;
 import com.hankcs.hanlp.collection.trie.DoubleArrayTrie;
 import com.hankcs.hanlp.collection.trie.bintrie.BaseNode;
+import com.hankcs.hanlp.collection.trie.bintrie.BinTrie;
 import com.hankcs.hanlp.corpus.tag.Nature;
 import com.hankcs.hanlp.dictionary.CoreDictionary;
 import com.hankcs.hanlp.dictionary.CustomDictionary;
@@ -47,11 +48,38 @@ public abstract class Segment
     protected Config config;
 
     /**
+     * 自定义词典，默认所有分词器共用一套定义在{@code com.hankcs.hanlp.HanLP.Config#CustomDictionaryPath}中的词典
+     */
+    public CustomDictionary customDictionary;
+
+    /**
      * 构造一个分词器
      */
     public Segment()
     {
-        config = new Config();
+        this(new Config(), CustomDictionary.DEFAULT);
+    }
+
+    /**
+     * 用自定义词典构造
+     *
+     * @param customDictionary 自定义词典
+     */
+    public Segment(CustomDictionary customDictionary)
+    {
+        this(new Config(), customDictionary);
+    }
+
+    /**
+     * 用配置和自定义词典构造
+     *
+     * @param config
+     * @param customDictionary
+     */
+    public Segment(Config config, CustomDictionary customDictionary)
+    {
+        this.config = config;
+        this.customDictionary = customDictionary;
     }
 
     /**
@@ -196,17 +224,18 @@ public abstract class Segment
      */
     protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList)
     {
-        return combineByCustomDictionary(vertexList, CustomDictionary.dat);
+        return combineByCustomDictionary(vertexList, CustomDictionary.DEFAULT);
     }
 
     /**
      * 使用用户词典合并粗分结果
      * @param vertexList 粗分结果
-     * @param dat 用户自定义词典
+     * @param customDictionary 用户自定义词典
      * @return 合并后的结果
      */
-    protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList, DoubleArrayTrie<CoreDictionary.Attribute> dat)
+    protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList, CustomDictionary customDictionary)
     {
+        DoubleArrayTrie<CoreDictionary.Attribute> dat = customDictionary.dat;
         assert vertexList.size() >= 2 : "vertexList至少包含 始##始 和 末##末";
         Vertex[] wordNet = new Vertex[vertexList.size()];
         vertexList.toArray(wordNet);
@@ -240,12 +269,13 @@ public abstract class Segment
             }
         }
         // BinTrie合并
-        if (CustomDictionary.trie != null)
+        BinTrie<CoreDictionary.Attribute> trie = customDictionary.trie;
+        if (trie != null)
         {
             for (int i = 1; i < length; ++i)
             {
                 if (wordNet[i] == null) continue;
-                BaseNode<CoreDictionary.Attribute> state = CustomDictionary.trie.transition(wordNet[i].realWord.toCharArray(), 0);
+                BaseNode<CoreDictionary.Attribute> state = trie.transition(wordNet[i].realWord.toCharArray(), 0);
                 if (state != null)
                 {
                     int to = i + 1;
@@ -286,19 +316,19 @@ public abstract class Segment
      */
     protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList, final WordNet wordNetAll)
     {
-        return combineByCustomDictionary(vertexList, CustomDictionary.dat, wordNetAll);
+        return combineByCustomDictionary(vertexList, CustomDictionary.DEFAULT, wordNetAll);
     }
 
     /**
      * 使用用户词典合并粗分结果，并将用户词语收集到全词图中
      * @param vertexList 粗分结果
-     * @param dat 用户自定义词典
+     * @param customDictionary 用户自定义词典
      * @param wordNetAll 收集用户词语到全词图中
      * @return 合并后的结果
      */
-    protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList, DoubleArrayTrie<CoreDictionary.Attribute> dat, final WordNet wordNetAll)
+    protected static List<Vertex> combineByCustomDictionary(List<Vertex> vertexList, CustomDictionary customDictionary, final WordNet wordNetAll)
     {
-        List<Vertex> outputList = combineByCustomDictionary(vertexList, dat);
+        List<Vertex> outputList = combineByCustomDictionary(vertexList, customDictionary);
         int line = 0;
         for (final Vertex vertex : outputList)
         {
@@ -306,7 +336,7 @@ public abstract class Segment
             final int currentLine = line;
             if (parentLength >= 3)
             {
-                CustomDictionary.parseText(vertex.realWord, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
+                customDictionary.parseText(vertex.realWord, new AhoCorasickDoubleArrayTrie.IHit<CoreDictionary.Attribute>()
                 {
                     @Override
                     public void hit(int begin, int end, CoreDictionary.Attribute value)
@@ -719,6 +749,18 @@ public abstract class Segment
     public Segment enableCustomDictionary(boolean enable)
     {
         config.useCustomDictionary = enable;
+        return this;
+    }
+
+    /**
+     * 启用新的用户词典
+     *
+     * @param customDictionary 新的自定义词典
+     */
+    public Segment enableCustomDictionary(CustomDictionary customDictionary)
+    {
+        config.useCustomDictionary = true;
+        this.customDictionary = customDictionary;
         return this;
     }
 

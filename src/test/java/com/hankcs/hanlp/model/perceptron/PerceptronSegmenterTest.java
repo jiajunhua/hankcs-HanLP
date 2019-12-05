@@ -32,7 +32,7 @@ public class PerceptronSegmenterTest extends TestCase
     {
         PerceptronLexicalAnalyzer analyzer = new PerceptronLexicalAnalyzer();
         analyzer.enableCustomDictionary(false);
-        CustomDictionary.insert("禁用用户词典");
+        analyzer.customDictionary.insert("禁用用户词典");
         assertEquals("[禁用/v, 用户/n, 词典/n]", analyzer.seg("禁用用户词典").toString());
     }
 
